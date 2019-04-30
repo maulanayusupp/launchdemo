@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Allianz" name="description" />
+    <meta content="Allianz" name="author" />
+	<title>Go</title>
+	<link rel="stylesheet" type="text/css" href="css/prosesi2.css">
+</head>
+<body>
+	<div class="container" id="trigger">
+        <div class="callbackdiv">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"
+                viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve" width="160" fill="#fff">
+                <path d="M79.756,57.128c-1.113-1.188-2.549-1.842-4.045-1.842h-3.894c0.047-1.055,0.089-2.113,0.089-3.216  c0-1.346-1.09-2.436-2.434-2.436H20.76c-1.344,0-2.434,1.09-2.434,2.436c0,16.592,5.25,27.637,15.011,32.24h-7.75  c-1.346,0-2.436,1.092-2.436,2.436c0,1.345,1.09,2.437,2.436,2.437h39.057c1.344,0,2.436-1.092,2.436-2.437  c0-1.344-1.092-2.436-2.436-2.436h-7.748c4.455-2.102,7.954-5.563,10.455-10.268c0.195,0.049,0.385,0.119,0.596,0.119h5.633  c4.364,0,8.184-4.164,8.52-9.279C82.299,61.807,81.424,58.906,79.756,57.128z M45.115,81.877c-13.935,0-21.287-9.208-21.879-27.371  h43.76C66.404,72.669,59.051,81.877,45.115,81.877z M73.58,69.291h-4.178c0.936-2.744,1.627-5.783,2.033-9.133h4.275  c0.173,0,0.362,0.162,0.49,0.299c0.563,0.602,1.172,2.036,1.035,4.109C77.074,67.083,75.363,69.291,73.58,69.291z"></path>
+                <path class="steam1" d="M45.115,42.196c-1.344,0-2.437-1.089-2.437-2.436V29.41c0-1.345,1.093-2.436,2.437-2.436c1.346,0,2.437,1.091,2.437,2.436  v10.35C47.552,41.106,46.461,42.196,45.115,42.196z"></path>
+                <path class="steam2" d="M54.857,47.067c-1.346,0-2.435-1.092-2.435-2.436V34.281c0-1.345,1.089-2.435,2.435-2.435s2.436,1.09,2.436,2.435v10.351  C57.293,45.975,56.203,47.067,54.857,47.067z"></path>
+                <path class="steam3" d="M35.375,47.067c-1.346,0-2.436-1.092-2.436-2.436V34.281c0-1.345,1.09-2.435,2.436-2.435c1.345,0,2.433,1.09,2.433,2.435  v10.351C37.808,45.975,36.72,47.067,35.375,47.067z"></path>
+            </svg>
+        </div>
+        <div id="theButton" class="centerbutton">
+            <div class="inner">
+                LET'S GO
+            </div>
+        </div>
+        <div style="margin-top: 10px; font-size: 12px;">Press and Hold</div>
+    </div>
+    <canvas id="c" class="hidden"></canvas>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5.1/dat.gui.min.js"></script>
+    <script type="text/javascript">
+
+    	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    	const startEvent = isMobile ? 'touchstart' : 'mousedown';
+    	const endEvent = isMobile ? 'touchend' : 'mouseup';
+
+    	//add styles to stylesheet
+    	const sheet = document.styleSheets[0];
+    	sheet.insertRule(".hf_noSelect {-webkit-touch-callout: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }", sheet.cssRules.length);
+    	sheet.insertRule(".hf_buttfill { height: 100%;width: 100%;position: absolute;-webkit-clip-path: inset(0% 50%);clip-path: inset(0% 50%); }", sheet.cssRules.length);
+    	sheet.insertRule(".hf_clicked .hf_buttfill {-webkit-clip-path: inset(0% 0%);clip-path: inset(0% 0%); }", sheet.cssRules.length);
+
+
+    	let holdFill = function (element, fillColor, textColor, holdTime, callBack) {
+
+    	    //add the noselect class to the element to prevent browser BS
+    	    element.classList.add('hf_noSelect');
+
+    	    //add the style for the timing to the element
+    	    element.setAttribute("style", "-webkit-transition: " + holdTime + "ms ease-in-out;transition: " + holdTime + "ms ease-in-out;");
+
+    	    //create the backfill element and add it to the DOM.
+    	    let newDiv = document.createElement("div");
+    	    newDiv.classList.add('hf_buttfill');
+    	    element.insertBefore(newDiv, element.firstChild);
+
+    	    //add color and timing styles to .hf_buttfill
+    	    element.querySelector('.hf_buttfill').setAttribute("style", "background-color: " + fillColor + ";-webkit-transition: " + holdTime + "ms ease-in-out;transition: " + holdTime + "ms ease-in-out;");
+
+    	    //define the functions to be used
+    	    let addClickClass = function (e) {
+    	        element.classList.add('hf_clicked');
+    	        element.setAttribute("style", "color: " + textColor + ";-webkit-transition: " + holdTime + "ms ease-in-out;transition: " + holdTime + "ms ease-in-out;");
+    	        element.addEventListener('transitionend', callBack);
+    	    };
+    	    let removeClickClass = function (e) {
+    	        element.classList.remove('hf_clicked');
+    	        element.setAttribute("style", "-webkit-transition: " + holdTime + "ms ease-in-out;transition: " + holdTime + "ms ease-in-out;");
+    	        element.removeEventListener('transitionend', callBack);
+    	    };
+
+    	    //prevent context menu on longpress for mobile devices
+    	    if (isMobile) {
+    	        element.oncontextmenu = function (event) {
+    	            event.preventDefault();
+    	            event.stopPropagation();
+    	            event.stopImmediatePropagation();
+    	            return false;
+    	        };
+    	    }
+
+    	    //add or remove the clicked classes on the button
+    	    element.addEventListener(startEvent, addClickClass);
+    	    document.body.addEventListener(endEvent, removeClickClass);
+
+    	};
+
+    	holdFill(document.getElementById('theButton'), '#fff', '#303030', 1000, function () {
+    	    document.querySelector('.callbackdiv').classList.add('show');
+    	    document.getElementById('theButton').classList.add('clickedClone');
+
+    	    var isCompleted = $('.callbackdiv').hasClass('show');
+            if (isCompleted) {
+                $('#trigger').addClass('hidden');
+                $('#c').removeClass('hidden');
+            }
+
+    	    // remove after 4 second
+    	    setTimeout(() => {
+    	        document.querySelector('.callbackdiv').classList.remove('show');
+    	        document.getElementById('theButton').classList.remove('clickedClone');
+    	    }, 4000);
+    	});
+
+
+        /*
+            Animation
+         */
+        var holeSize = 100; // size of the black hole.
+        var rotationDistance = 200; // distance of black hole from canvas center.
+        var rotationSpeed = 1; // speed of black hole rotation.
+        var spawnCount = 20;  // the amount of stars to spawn every frame.
+        var rotationStep = 37;
+
+        var canvas = document.getElementById('c'),
+            ctx = canvas.getContext('2d'),
+            stars = [],
+            m = {},
+            r = 0,
+            accel = 1.01,
+            accel2 = 0.001,
+            ratio = window.devicePixelRatio || 1,
+            spawnPos = 0,
+            randomize = true
+
+        canvas.width = window.innerWidth * ratio;
+        canvas.height = window.innerHeight * ratio;
+
+        m.x = null;
+        m.y = null;
+
+        ctx.strokeStyle = '#fff';
+        ctx.translate(0.5, 0.5);
+
+        // create stars
+        function createStars(n){
+
+            if(m.x === null) return;
+
+            for(var i=0;i<n;i++){
+                var shape = {
+                    x: m.x,
+                    y: m.y,
+                    r: 1,
+                    speed: 1,
+                    accel: accel,
+                    accel2: accel2,
+                    angle: randomize ? Math.random() * 360 : spawnPos
+                }
+
+                if(!randomize) spawnPos += rotationStep;
+
+                var vel = {
+                    x: holeSize * Math.cos(shape.angle * Math.PI / 180),
+                    y: holeSize * Math.sin(shape.angle * Math.PI / 180)
+                };
+
+                shape.x += vel.x;
+                shape.y += vel.y;
+
+                stars.push(shape);
+            }
+        }
+
+        function render(){
+            createStars(spawnCount);
+
+            var bench = [];
+            // ctx.save();
+            // ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // ctx.restore();
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            r+=rotationSpeed;
+            if(r < 360){
+                m = { x: canvas.width / 2, y: canvas.height / 2, angle: r }
+
+                var targetAngle = m.angle * Math.PI / 180;
+
+                m.x += rotationDistance * Math.cos(targetAngle);
+                m.y += rotationDistance * Math.sin(targetAngle);
+            }else{
+                r = 0;
+            }
+
+            while(stars.length){
+                var star = stars.pop();
+
+                var vel = {
+                    x: star.speed * Math.cos(star.angle * Math.PI / 180),
+                    y: star.speed * Math.sin(star.angle * Math.PI / 180)
+                };
+
+                ctx.beginPath();
+                ctx.moveTo(star.x, star.y);
+                ctx.lineTo(star.x + vel.x, star.y + vel.y);
+                ctx.closePath();
+                ctx.stroke();
+
+                star.x += vel.x;
+                star.y += vel.y;
+
+                star.speed *= star.accel;
+
+                star.accel += star.accel2;
+
+                if(star.x < canvas.width && star.x > 0 && star.y < canvas.height && star.y > 0){
+                    bench.push(star);
+                }
+            }
+
+            stars = bench.slice(0).reverse();
+        }
+
+        window.requestAnimFrame = (function(){
+            return  window.requestAnimationFrame   ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame    ||
+                function(callback){
+                    window.setTimeout(callback, 1000 / 60);
+                };
+        })();
+
+        (function animloop(){
+            requestAnimFrame(animloop);
+            render();
+        })();
+
+
+        if(ratio == 2){
+            canvas.style.width='100%';
+            canvas.style.height='100%';
+        }
+
+        // var GUIControls = {
+        //     holeSize: holeSize,
+        //     rotationDistance: rotationDistance,
+        //     rotationSpeed: rotationSpeed,
+        //     spawnCount: spawnCount,
+        //     rotationStep: rotationStep,
+        //     randomize: randomize,
+        //     reset: function() {
+        //         holeSize = 100
+        //         rotationDistance = 200
+        //         rotationSpeed = 1
+        //         spawnCount = 20
+        //         rotationStep = 37
+        //         randomize = true
+        //     }
+        // }
+
+        // var datGUI = new dat.GUI()
+
+        // datGUI.add(GUIControls, 'holeSize').min(0).max(1000).step(1).name('Hole Size').listen().onChange(function(val){ holeSize = val });
+        // datGUI.add(GUIControls, 'rotationDistance').min(0).max(500).step(1).name('Rotation Distance').listen().onChange(function(val){ rotationDistance = val });
+        // datGUI.add(GUIControls, 'rotationSpeed').min(0).max(5).name('Rotation Speed').listen().onChange(function(val){ rotationSpeed = val });
+        // datGUI.add(GUIControls, 'rotationStep').min(-100).max(100).name('Rotation Step').listen().onChange(function(val){ rotationStep = val });
+        // datGUI.add(GUIControls, 'spawnCount').min(1).max(100).name('Spawn Count').listen().onChange(function(val){ spawnCount = val });
+        // datGUI.add(GUIControls, 'randomize', true, false).name('Randomize').onChange(function(val){ randomize = val });
+        // datGUI.add(GUIControls, 'reset').name('Reset');
+
+        // datGUI.domElement.querySelector('ul').classList.toggle('closed');
+    </script>
+
+</body>
+</html>
